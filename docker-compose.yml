@@ -1,0 +1,16 @@
+version: '3.9'
+
+services:
+  api:
+    container_name: hello-world
+    # Dockerfileの場所
+    build: .
+    volumes:
+      - type: bind
+        source: ./hello-world
+        target: /hello-world
+    ports:
+      - 5050:5050
+
+volumes:
+  hello-world-data:
