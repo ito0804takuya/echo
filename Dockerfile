@@ -1,3 +1,5 @@
+# syntax=docker/dockerfile:1
+
 FROM golang:1.22.1-alpine3.19
 
 # AlpineLinuxのパッケージ管理コマンドapkをupdate, gitをインストール
