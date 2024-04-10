@@ -7,6 +7,7 @@ import (
 	"github.com/labstack/echo/v4/middleware"
 )
 
+// hello-world
 func main() {
 	// Echo instance
 	e := echo.New()
