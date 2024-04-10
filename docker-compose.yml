@@ -2,15 +2,15 @@ version: '3.9'
 
 services:
   api:
-    container_name: hello-world
+    container_name: api
     # Dockerfileの場所
-    build: .
+    build: ./echo
     volumes:
       - type: bind
-        source: ./hello-world
-        target: /hello-world
+        source: ./echo
+        target: /app
     ports:
       - 5050:5050
 
 volumes:
-  hello-world-data:
+  api-data:
