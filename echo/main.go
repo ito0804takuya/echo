@@ -7,20 +7,57 @@ import (
 	"github.com/labstack/echo/v4/middleware"
 )
 
-// hello-world
+type Host struct {
+	Echo *echo.Echo
+}
+
 func main() {
-	// Echo instance
-	e := echo.New()
+	hosts := map[string]*Host{}
 
-	// Middleware
-	e.Use(middleware.Logger())
-	e.Use(middleware.Recover())
+	// ----------
+	// サブドメイン api
+	// ----------
+	api := echo.New()
+	api.Use(middleware.Logger())
+	api.Use(middleware.Recover())
 
-	// Route => handler
-	e.GET("/", func(c echo.Context) error {
-		return c.String(http.StatusOK, "Hello, World!\n")
+	hosts["api.localhost:5050"] = &Host{api}
+
+	api.GET("/", func(c echo.Context) error {
+		return c.String(http.StatusOK, "API")
 	})
 
-	// Start server
+	// ----------
+	// ウェブサイト
+	// ----------
+	site := echo.New()
+	site.Use(middleware.Logger())
+	site.Use(middleware.Recover())
+
+	hosts["localhost:5050"] = &Host{site}
+
+	site.GET("/", func(c echo.Context) error {
+		return c.String(http.StatusOK, "Website")
+	})
+
+	// ----------
+	// 本体
+	// ----------
+	e := echo.New()
+	// Anyに渡したfuncはリクエストのたびに実行される
+	e.Any("/*", func(c echo.Context) (err error) {
+		req := c.Request()
+		res := c.Response()
+		host := hosts[req.Host]
+
+		if host == nil {
+			err = echo.ErrNotFound
+		} else {
+			host.Echo.ServeHTTP(res, req)
+		}
+
+		return
+	})
+
 	e.Logger.Fatal(e.Start(":5050"))
 }
